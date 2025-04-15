@@ -60,7 +60,7 @@ jobs:
 
           host: ${{secrets.HOST}}
 
-          username: ${{vars.username}}
+          username: ${{vars.USERNAME}}
 
           key: ${{secrets.KEY}}
 
