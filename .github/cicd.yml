@@ -1,5 +1,3 @@
-name: Build, Push, and Deploy Image
-
 on:
   push:
     branches: [main]
@@ -73,13 +71,32 @@ jobs:
           IMAGE_URI="${{ steps.ecr-login.outputs.registry }}/${{ env.ECR_REPO_NAME}}:${{ env.IMAGE_TAG }}"
           echo "image-uri=$IMAGE_URI" >> $GITHUB_OUTPUT
 
-      
+      - name: Post Fix Suggestions on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            // Use require() to import Node.js modules
+            const fs = require('fs');
+            
+            try {
+              // Read file synchronously (use async methods if preferred)
+              const fsReport = JSON.parse(fs.readFileSync('trivy-fs-results.json', 'utf8'));
+              const imageReport = JSON.parse(fs.readFileSync('trivy-image-results.json', 'utf8'));
+              
+              const formatVulns = (vulns) => vulns.map(v => 
+                **Package:** ${v.PkgName} (${v.InstalledVersion})  
+                **CVE:** ${v.VulnerabilityID} (${v.Severity})  
+                **Fix Version:** ${v.FixedVersion || 'None'}  
+                **Advisory:** ${v.PrimaryURL || 'N/A'}
+              ).join('\n');
+
               const fsVulns = fsReport.Results?.flatMap(r => r.Vulnerabilities || []);
               const imageVulns = imageReport.Results?.flatMap(r => r.Vulnerabilities || []);
 
               let comment = '## 🔍 Trivy Security Report\n';
-              if (fsVulns.length > 0) comment += `### 📂 Filesystem Vulnerabilities\n${formatVulns(fsVulns)}\n`;
-              if (imageVulns.length > 0) comment += `### 🐳 Docker Image Vulnerabilities\n${formatVulns(imageVulns)}\n`;
+              if (fsVulns.length > 0) comment += ### 📂 Filesystem Vulnerabilities\n${formatVulns(fsVulns)}\n;
+              if (imageVulns.length > 0) comment += ### 🐳 Docker Image Vulnerabilities\n${formatVulns(imageVulns)}\n;
               if (fsVulns.length + imageVulns.length === 0) comment += '✅ No critical/high vulnerabilities found.';
 
               await github.rest.issues.createComment({
@@ -118,3 +135,4 @@ jobs:
       - name: Update ECS service
         run: |
           aws ecs update-service --cluster ${{ env.ECS_CLUSTER }} --service ${{ env.ECS_SERVICE }} --task-definition ${{ env.NEW_TASK_DEFINITION }} --force-new-deployment
+
