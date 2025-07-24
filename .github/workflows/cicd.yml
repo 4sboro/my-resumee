@@ -11,7 +11,6 @@ permissions:
 
 env:
   AWS_REGION: us-east-1
-  AWS_ROLE: ${{ secrets.AWS_ROLE }}
   ECR_REPO_NAME: dev
   IMAGE_TAG: ${{ github.run_number }}
   TASK_DEFINITION: nginx-task
@@ -31,7 +30,7 @@ jobs:
       - name: AWS Creds Config 
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ env.AWS_ROLE }}
+          role-to-assume: ${{ secrets.AWS_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
       
       - name: Login to ECR 
