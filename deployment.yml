@@ -16,8 +16,8 @@ spec:
         app: application
     spec:
       containers:
-        - name: application-container
-          image: 4sboro4/applicationimage:latest
+        - name: dockercontainer
+          image: dockerimage:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
