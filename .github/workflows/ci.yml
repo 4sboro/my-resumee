@@ -44,10 +44,10 @@ jobs:
   
 
 
-<<<<<<< HEAD
+
  
-=======
-  name: Deploy to EKS
+
+name: Deploy to EKS
 
 on:
   push:
@@ -84,5 +84,4 @@ jobs:
         kubectl set image deployment/YOUR_DEPLOYMENT \
           YOUR_CONTAINER=YOUR_ECR_REPO:${{ github.sha }}
 
-        kubectl rollout status deployment/YOUR_DEPLOYMENT
->>>>>>> 427de5c (the deployement)
+        kubectl rollout status deployment/YOUR_DEPLOYMENT 427de5c (the deployement)
