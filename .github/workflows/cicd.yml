@@ -115,3 +115,39 @@ jobs:
 =======
   
 >>>>>>> 427de5c (the deployement)
+
+
+Name: Deploy to EKS
+
+jobs:
+  deploy:
+
+    needs: build
+
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write        # REQUIRED for OIDC
+      contents: read
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Configure AWS Credentials (OIDC)
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{secrets.ROLE}}
+        aws-region: us-east-1
+
+    - name: Login to ECR
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Deploy to EKS
+      run: |
+        aws eks update-kubeconfig --region us-east-1 --name YOUR_EKS_CLUSTER
+
+        kubectl set image deployment/YOUR_DEPLOYMENT \
+          YOUR_CONTAINER=YOUR_ECR_REPO:${{ github.sha }}
+
+        kubectl rollout status deployment/YOUR_DEPLOYMENT 427de5c (the deployement)
