@@ -110,4 +110,8 @@ jobs:
             } catch (error) {
               core.error('Failed to process Trivy results: ' + error.message);
             }
+<<<<<<< HEAD
   
+=======
+  
+>>>>>>> 427de5c (the deployement)
