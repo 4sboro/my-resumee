@@ -46,12 +46,7 @@ jobs:
 
 
  
-
-name: Deploy to EKS
-
-on:
-  push:
-    branches: ["main"]
+Name: Deploy to EKS
 
 jobs:
   deploy:
